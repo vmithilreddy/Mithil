@@ -1,1 +1,45 @@
-HLO
+import sqlite3
+
+# Connect to SQLite database (or create if it doesn't exist)
+conn = sqlite3.connect('contact_book.db')
+
+# Create a cursor object to execute SQL commands
+cursor = conn.cursor()
+
+# Create a table if not exists
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS contacts (
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Name TEXT NOT NULL,
+        CellNumber TEXT NOT NULL,
+        Email TEXT
+    )
+''')
+
+# Sample data
+data = [
+    ('John Doe', '123-456-7890', 'john.doe@example.com'),
+    ('Jane Smith', '987-654-3210', 'jane.smith@example.com'),
+    ('Bob Johnson', '555-123-4567', 'bob.johnson@example.com'),
+    ('Alice Williams', '111-222-3333', 'alice.williams@example.com'),
+    ('Charlie Brown', '999-888-7777', 'charlie.brown@example.com')
+]
+
+# Insert data into the table
+cursor.executemany('INSERT INTO contacts (Name, CellNumber, Email) VALUES (?, ?, ?)', data)
+
+# Commit changes
+conn.commit()
+
+# Fetch and display all data
+cursor.execute('SELECT * FROM contacts')
+all_contacts = cursor.fetchall()
+
+print("ID\tName\t\tCell#\t\t\tEmail")
+print("---------------------------------------------")
+for contact in all_contacts:
+    print(f"{contact[0]}\t{contact[1]}\t{contact[2]}\t{contact[3]}")
+
+# Close the cursor and connection
+cursor.close()
+conn.close()
